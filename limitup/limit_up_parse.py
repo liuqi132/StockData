@@ -23,6 +23,7 @@ def parse_limitUp():
             stock_code = limit_up_stock.stock_code.strip('sz')
             stock_sh = get_stock_realTime_sz(stock_code)
             time.sleep(1)
+
         if stock_sh.price_start is not None:
             start_change_rate = round((float(
                 stock_sh.price_start) - limit_up_stock.price_end) * 100 / limit_up_stock.price_end, 2)
@@ -33,7 +34,7 @@ def parse_limitUp():
             price_high = float(stock_sh.price_high)
         else:
             price_high = limit_up_stock.price_end
-        high_change_rate = (price_high - float(stock_sh.price_low)) * 100 / limit_up_stock.price_end
+        high_change_rate = (price_high - float(stock_sh.price_current)) * 100 / limit_up_stock.price_end
 
         # if start_change_rate > 5 and limit_up_stock.limit_count == 1:
         #     print('{} - 高开股票 - 开盘涨幅:{} - 当前涨幅:{}'.format(stock_sh.name, start_change_rate, stock_sh.change_rate))
@@ -107,7 +108,7 @@ def parse_limitUp_long():
 @limit.route('/get_pre_limitUp')
 def get_pre_limitUp():
     days = 2
-    last_two_days = get_last_days('2023-02-27', -days)
+    last_two_days = get_last_days('2023-03-01', -days)
     pre_stock_dict = {}
     stock_list = TransactionDay.query.filter(
         and_(TransactionDay.range_increase < 11,
@@ -166,7 +167,7 @@ def get_pre_limitUp():
 def get_limitUp():
     stock_list = []
     days = 2
-    last_two_days = get_last_days('2023-02-27', -days)
+    last_two_days = get_last_days('2023-03-01', -days)
     stock_list_1 = TransactionDay.query.filter(
         and_(TransactionDay.range_increase > 9.9, TransactionDay.range_increase < 11,
              TransactionDay.transaction_day == last_two_days[1])).all()

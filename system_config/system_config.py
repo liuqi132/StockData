@@ -1,3 +1,4 @@
+import json
 import os
 
 from config import database_file
@@ -6,10 +7,10 @@ from models import LimitUp, TransactionDay
 from system_config import system_blueprint
 
 
-@system_blueprint.route('/getStarStock', methods=['GET'])
+@system_blueprint.route('/getStock', methods=['GET'])
 def hello_world():  # put application's code here
-    test_limit()
-    return 'index'
+    tmp_list = TransactionDay.query.all()
+    return tmp_list
 
 
 def test_limit():
@@ -23,7 +24,7 @@ def test_limit():
             print(stock.stock_name, (stock_0210.price_end - stock_next.price_end) * 100 / stock_next.price_end)
 
 
-@system_blueprint.route('/api/database_init')
+@system_blueprint.route('/database_init')
 def database_init():
     # 必须要到导入models模块
     # db.drop_all()

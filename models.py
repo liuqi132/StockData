@@ -1,3 +1,5 @@
+import json
+
 from flask_sqlalchemy import SQLAlchemy
 
 from datetime import datetime
@@ -11,7 +13,7 @@ class StockBaseInfo(db.Model):
     stock_name = db.Column(db.String(32))
 
 
-class TransactionDay(db.Model):
+class TransactionDay(db.Model, dict):
     __tablename__ = 't_transaction_day'
     id = db.Column(db.Integer, primary_key=True)
     transaction_day = db.Column(db.Date, default=datetime.utcnow)
@@ -27,9 +29,15 @@ class TransactionDay(db.Model):
     cash_business = db.Column(db.Float)
     pe_ration = db.Column(db.Float)
 
+    def __init__(self):
+        dict.__init__(self, transaction_day=self.transaction_day, stock_code=self.stock_code)
+
     __table_args__ = (
         db.UniqueConstraint('transaction_day', 'stock_code', name='unique_day_code'),
     )
+
+    def to_json(self):
+        return self.__dict__
 
     def __repr__(self):
         return f'{self.transaction_day}, {self.stock_code}, {self.stock_name}, {self.price_yesterday}, ' \
