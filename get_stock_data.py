@@ -1,17 +1,15 @@
-import collections
 import json
 import math
 import os.path
 import random
 import time
+from datetime import datetime, timedelta
+
 import pandas
 import requests
-
-from datetime import datetime, timedelta
 from my_fake_useragent import UserAgent
-from models import TransactionDay, BuySale
 
-import app
+from models import TransactionDay, BuySale
 
 ua = UserAgent(family='chrome')
 res = ua.random()
@@ -21,7 +19,6 @@ headers = {"User-Agent": res}  # 伪装请求头
 proxies = {'http': '117.242.36.205:42252'}  # 代理ip
 
 all_stock_dict = {}
-all_stock_list = []
 
 
 class RealTimeInfo_SH:
@@ -164,7 +161,7 @@ def get_stock_shenzhen():
     return a_shenzhen_list
 
 
-def get_stock_sz():
+def get_stock_sz(all_stock_list):
     shenzhen_stock_xlsx = f'http://www.szse.cn/api/report/ShowReport?'
     today = datetime.utcnow().strftime('%Y-%m-%d')
     yesterday = (datetime.utcnow() + timedelta(days=-1)).strftime('%Y-%m-%d')
@@ -173,8 +170,8 @@ def get_stock_sz():
         'SHOWTYPE': 'xlsx',
         'CATALOGID': '1815_stock_snapshot',
         'TABKEY': 'tab1',
-        'txtBeginDate': today,
-        'txtEndDate': today
+        'txtBeginDate': yesterday,
+        'txtEndDate': yesterday
     }
     shenzhen_stock_response = requests.get(url=shenzhen_stock_xlsx, params=stock_xmls)
     print(shenzhen_stock_response.url)
@@ -182,10 +179,10 @@ def get_stock_sz():
         filename = datetime.now().strftime('%Y%m%d%H%M%S') + '.xlsx'
         with open(filename, 'wb') as f_stock:
             f_stock.write(shenzhen_stock_response.content)
-        return parse_sz_xlsx(filename)
+        return parse_sz_xlsx(filename, all_stock_list)
 
 
-def parse_sz_xlsx(filename):
+def parse_sz_xlsx(filename, all_stock_list):
     file_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), filename)
 
     df = pandas.read_excel(file_path, sheet_name='股票行情', dtype=str)
@@ -233,9 +230,9 @@ def handle_stock_bs(stock_list: list):
     return stock_bs_list
 
 
-def get_all_stock():
+def get_all_stock(all_stock_list):
     sh_stock_list = get_stock_shanghai()
-    get_stock_sz()
+    get_stock_sz(all_stock_list)
     for sh_detail in sh_stock_list:
         all_stock_dict['sh' + sh_detail[0]] = sh_detail[7]
         all_stock_list.append(TransactionDay(transaction_day=datetime.strptime(today, '%Y-%m-%d'),

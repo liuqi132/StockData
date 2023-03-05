@@ -7,7 +7,7 @@ from my_fake_useragent import UserAgent
 from sqlalchemy import and_
 
 from exts import db
-from get_stock_data import get_all_stock, all_stock_list
+from get_stock_data import get_all_stock
 from models import TransactionDay, BuySale, StockBaseInfo
 from warehousing import warehousing_blueprint
 
@@ -24,7 +24,8 @@ proxies = {'http': '117.242.36.205:42252'}  # 代理ip
 
 @warehousing_blueprint.route('/parseStock')
 def parse_stock():
-    get_all_stock()
+    all_stock_list = []
+    get_all_stock(all_stock_list)
     try:
         print(all_stock_list.__len__())
         db.session.add_all(all_stock_list)

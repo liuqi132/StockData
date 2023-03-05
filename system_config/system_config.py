@@ -1,15 +1,18 @@
-import json
 import os
+
+from flask_restful import marshal_with
 
 from config import database_file
 from exts import db
 from models import LimitUp, TransactionDay
+from out_fileds.out_fields import transaction_fields
 from system_config import system_blueprint
 
 
 @system_blueprint.route('/getStock', methods=['GET'])
+@marshal_with(transaction_fields)
 def hello_world():  # put application's code here
-    tmp_list = TransactionDay.query.all()
+    tmp_list = TransactionDay.query.filter(TransactionDay.transaction_day == '2023-01-09').all()
     return tmp_list
 
 
