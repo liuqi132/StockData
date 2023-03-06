@@ -170,8 +170,8 @@ def get_stock_sz(all_stock_list):
         'SHOWTYPE': 'xlsx',
         'CATALOGID': '1815_stock_snapshot',
         'TABKEY': 'tab1',
-        'txtBeginDate': yesterday,
-        'txtEndDate': yesterday
+        'txtBeginDate': today,
+        'txtEndDate': today
     }
     shenzhen_stock_response = requests.get(url=shenzhen_stock_xlsx, params=stock_xmls)
     print(shenzhen_stock_response.url)

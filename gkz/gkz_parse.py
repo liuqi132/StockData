@@ -5,11 +5,10 @@ from utils.date_util import get_last_days, get_current_day
 from . import gkz_blueprint
 
 
-
-@gkz_blueprint.route('/api/get_gkz2')
+@gkz_blueprint.route('/get_gkz2')
 def get_pre_gkz():
     days = 2
-    last_two_days = get_last_days('2023-02-13', -days)
+    last_two_days = get_last_days('2023-03-03', -days)
     pre_stock_dict = {}
     gkz_stock_dict = {}
     stock_yesterdays = TransactionDay.query.filter(
@@ -36,7 +35,7 @@ def get_pre_gkz():
     return 'Done'
 
 
-@gkz_blueprint.route('/api/get_gkz3')
+@gkz_blueprint.route('/get_gkz3')
 def get_pre_gkz3():
     days = 3
     stock_lists = StockBaseInfo.query.all()
