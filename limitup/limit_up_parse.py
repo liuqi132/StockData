@@ -110,7 +110,7 @@ def parse_limitUp_long():
 @limit.route('/get_pre_limitUp')
 def get_pre_limitUp():
     days = 2
-    last_two_days = get_last_days('2023-03-09', -days)
+    last_two_days = get_last_days('2023-03-14', -days)
     pre_stock_dict = {}
     stock_list = TransactionDay.query.filter(
         and_(TransactionDay.range_increase < 11,
@@ -169,7 +169,7 @@ def get_pre_limitUp():
 def get_limitUp():
     stock_list = []
     days = 2
-    last_two_days = get_last_days('2023-03-09', -days)
+    last_two_days = get_last_days('2023-03-14', -days)
     stock_list_1 = TransactionDay.query.filter(
         and_(TransactionDay.range_increase > 9.9, TransactionDay.range_increase < 11,
              TransactionDay.transaction_day == last_two_days[1])).all()
