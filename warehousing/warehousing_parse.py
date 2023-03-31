@@ -77,7 +77,7 @@ def history_data_sh():
     try:
         for stock_info in stock_list_sh:
             stock_single = TransactionDay.query.filter(and_(
-                TransactionDay.transaction_day == '2023-02-13',
+                TransactionDay.transaction_day == '2023-03-29',
                 TransactionDay.stock_code == stock_info.stock_code)).first()
             if stock_info.stock_code.startswith('sz') or stock_info.stock_code.startswith(
                     'sh688') or stock_info.stock_code.startswith('sh90'):

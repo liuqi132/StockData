@@ -165,7 +165,6 @@ def get_stock_sz(all_stock_list):
     shenzhen_stock_xlsx = f'http://www.szse.cn/api/report/ShowReport?'
     today = datetime.utcnow().strftime('%Y-%m-%d')
     yesterday = (datetime.utcnow() + timedelta(days=-1)).strftime('%Y-%m-%d')
-    print(yesterday)
     stock_xmls = {
         'SHOWTYPE': 'xlsx',
         'CATALOGID': '1815_stock_snapshot',
@@ -174,7 +173,6 @@ def get_stock_sz(all_stock_list):
         'txtEndDate': today
     }
     shenzhen_stock_response = requests.get(url=shenzhen_stock_xlsx, params=stock_xmls)
-    print(shenzhen_stock_response.url)
     if shenzhen_stock_response.status_code == 200:
         filename = datetime.now().strftime('%Y%m%d%H%M%S') + '.xlsx'
         with open(filename, 'wb') as f_stock:
