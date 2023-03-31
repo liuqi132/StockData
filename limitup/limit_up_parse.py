@@ -86,13 +86,13 @@ def parse_limit_up():
 
 @limit.route('/parse_limitUp_long')
 def parse_limit_up_long():
-    days = 5
-
+    days = 4
     last_six_days = get_last_days(current_day=get_current_day(), window_size=-days)
     # 查询最近4天的交易信息
     limit_up_lists = LimitUp.query.filter(and_(LimitUp.transaction_day < last_six_days[-2],
                                                LimitUp.transaction_day >= last_six_days[0],
-                                               LimitUp.continue_rise >= 1)).order_by(LimitUp.transaction_day.desc()).all()
+                                               LimitUp.continue_rise >= 1)).order_by(
+        LimitUp.transaction_day.desc()).all()
     for limit_up_stock in limit_up_lists:
         if limit_up_stock.stock_code.startswith('sz30'):
             continue
@@ -113,11 +113,12 @@ def parse_limit_up_long():
             print('{} 日期:{} 次数:{} 跌幅：{}，涨幅: {}, 价格：{}'.format(stock_sh.name, limit_up_stock.transaction_day,
                                                               limit_up_stock.limit_count, abs(change_rate),
                                                               end_change_rate * 100, float(stock_sh.price_current)))
-        days = 5
         last_six_days = get_last_days(current_day=get_current_day(), window_size=-days)
         pre_limit_up_lists = PreLimitUp.query.filter(PreLimitUp.transaction_day >= last_six_days[0],
                                                      PreLimitUp.transaction_day <= last_six_days[-2]).all()
         for pre_limit_up_stock in pre_limit_up_lists:
+            if LimitUp.query.filter_by(stock_name=pre_limit_up_stock.stock_name).count() > 0:
+                continue
             if pre_limit_up_stock.stock_code.startswith('sh'):
                 stock_code = pre_limit_up_stock.stock_code.strip('sh')
                 pre_stock_sh = get_stock_realTime_sh(stock_code)
@@ -132,7 +133,7 @@ def parse_limit_up_long():
                 price_high = float(pre_stock_sh.price_high)
             else:
                 price_high = pre_limit_up_stock.price_end
-            high_change_rate = (price_high - float(pre_stock_sh.price_low)) / pre_limit_up_stock.price_end
+            high_change_rate = (price_high - float(pre_stock_sh.price_low)) / pre_limit_up_stock.price_high
             if abs(high_change_rate) > 0.08:
                 print('预涨停-冲高回落 - {} - {}'.format(stock_name, high_change_rate))
 
@@ -165,12 +166,13 @@ def get_pre_limit_up():
                 pre_limit_up.transaction_day = stock.transaction_day
                 pre_limit_up.price_end = stock.price_end
                 pre_limit_up.price_high = stock.price_high
+                pre_limit_up.range_increase = stock.range_increase
                 db.session.add(pre_limit_up)
                 db.session.commit()
             elif limit_up_lists is None and pre_limit_up is None:
                 pre_limit_up_tmp = PreLimitUp(stock_code=stock.stock_code, stock_name=stock.stock_name,
                                               price_end=stock.price_end, transaction_day=stock.transaction_day,
-                                              price_high=stock.price_high)
+                                              price_high=stock.price_high, range_increase=stock.range_increase)
                 db.session.add(pre_limit_up_tmp)
                 db.session.commit()
             else:

@@ -78,6 +78,7 @@ class PreLimitUp(db.Model):
     stock_name = db.Column(db.String(32))
     price_end = db.Column(db.Float)
     price_high = db.Column(db.Float)
+    range_increase = db.Column(db.Float)
     transaction_day = db.Column(db.Date, default=datetime.utcnow)
     create_time = db.Column(db.DateTime(), default=datetime.utcnow)
 
